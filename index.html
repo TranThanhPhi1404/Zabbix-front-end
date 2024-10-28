@@ -4,37 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zabbix Monitoring Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Monitoring Dashboard</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Zabbix Monitoring Dashboard</h1>
+    <h1>Monitoring Data</h1>
+    <p>CPU Avg: <span id="cpu-avg"></span>%</p>
+    <p>CPU User: <span id="cpu-user"></span>%</p>
+    <p>Disk Usage: <span id="disk"></span> GB</p>
+    <p>Memory Usage: <span id="memory"></span> GB</p>
+    <p>Network Traffic: <span id="network"></span> Mbps</p>
 
-        <div class="monitoring-section" id="cpu">
-            <h2>CPU</h2>
-            <div>CPU Avg Load: <span id="cpuAvg"></span></div>
-            <div>CPU User: <span id="cpuUser"></span></div>
-        </div>
+    <script>
+        // Cấu hình Firebase
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-app.firebaseapp.com",
+            databaseURL: "https://zabbix-7bf0d-default-rtdb.firebaseio.com/",
+            projectId: "your-project-id"
+        };
 
-        <div class="monitoring-section" id="memory">
-            <h2>Memory</h2>
-            <div>Memory Usage: <span id="memoryUsage"></span></div>
-        </div>
+        // Khởi tạo Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        <div class="monitoring-section" id="disk">
-            <h2>Disk</h2>
-            <div>Disk Usage: <span id="diskUsage"></span></div>
-        </div>
-
-        <div class="monitoring-section" id="network">
-            <h2>Network</h2>
-            <div>Network Traffic: <span id="networkTraffic"></span></div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+        // Lấy dữ liệu từ Firebase và hiển thị lên HTML
+        db.ref('zabbix').on('value', (snapshot) => {
+            const data = snapshot.val();
+            document.getElementById('cpu-avg').innerText = data.cpu_avg;
+            document.getElementById('cpu-user').innerText = data.cpu_user;
+            document.getElementById('disk').innerText = data.disk;
+            document.getElementById('memory').innerText = data.memory;
+            document.getElementById('network').innerText = data.network;
+        });
+    </script>
 </body>
 
 </html>
