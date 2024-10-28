@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoring Dashboard</title>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 </head>
 
 <body>
@@ -17,28 +15,11 @@
     <p>Memory Usage: <span id="memory"></span> GB</p>
     <p>Network Traffic: <span id="network"></span> Mbps</p>
 
-    <script>
-        // Cấu hình Firebase
-        const firebaseConfig = {
-            apiKey: "your-api-key",
-            authDomain: "your-app.firebaseapp.com",
-            databaseURL: "https://zabbix-7bf0d-default-rtdb.firebaseio.com/",
-            projectId: "your-project-id"
-        };
-
-        // Khởi tạo Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // Lấy dữ liệu từ Firebase và hiển thị lên HTML
-        db.ref('zabbix').on('value', (snapshot) => {
-            const data = snapshot.val();
-            document.getElementById('cpu-avg').innerText = data.cpu_avg;
-            document.getElementById('cpu-user').innerText = data.cpu_user;
-            document.getElementById('disk').innerText = data.disk;
-            document.getElementById('memory').innerText = data.memory;
-            document.getElementById('network').innerText = data.network;
-        });
+    <!-- Sử dụng ES6 Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"; import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"; const firebaseConfig = { databaseURL: "https://your-app.firebaseio.com"
+        }; const app = initializeApp(firebaseConfig); const db = getDatabase(app); const dbRef = ref(db, 'zabbix'); onValue(dbRef, (snapshot) => { const data = snapshot.val(); document.getElementById('cpu-avg').innerText = data.cpu_avg; document.getElementById('cpu-user').innerText
+        = data.cpu_user; document.getElementById('disk').innerText = data.disk; document.getElementById('memory').innerText = data.memory; document.getElementById('network').innerText = data.network; });
     </script>
 </body>
 
