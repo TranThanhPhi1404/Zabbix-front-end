@@ -18,8 +18,8 @@
     <!-- Sử dụng ES6 Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"; import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"; const firebaseConfig = { databaseURL: "https://zabbix-7bf0d-default-rtdb.firebaseio.com/"
-        }; const app = initializeApp(firebaseConfig); const db = getDatabase(app); const dbRef = ref(db, 'zabbix'); onValue(dbRef, (snapshot) => { const data = snapshot.val(); document.getElementById('cpu-avg').innerText = data.cpu_avg; document.getElementById('cpu-user').innerText
-        = data.cpu_user; document.getElementById('disk').innerText = data.disk; document.getElementById('memory').innerText = data.memory; document.getElementById('network').innerText = data.network; });
+        }; const app = initializeApp(firebaseConfig); const db = getDatabase(app); const dbRef = ref(db, 'zabbix'); onValue(dbRef, (snapshot) => { const data = snapshot.val(); console.log(data); document.getElementById('cpu-avg').innerText = data.cpu_avg;
+        document.getElementById('cpu-user').innerText = data.cpu_user; document.getElementById('disk').innerText = data.disk; document.getElementById('memory').innerText = data.memory; document.getElementById('network').innerText = data.network; });
     </script>
 </body>
 
