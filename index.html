@@ -4,23 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoring Dashboard</title>
+    <title>Zabbix Monitoring Frontend</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="style-build.css" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Monitoring Data</h1>
-    <p>CPU Avg: <span id="cpu-avg"></span>%</p>
-    <p>CPU User: <span id="cpu-user"></span>%</p>
-    <p>Disk Usage: <span id="disk"></span> GB</p>
-    <p>Memory Usage: <span id="memory"></span> GB</p>
-    <p>Network Traffic: <span id="network"></span> Mbps</p>
+    <div class="container flex w-full h-full">
+        <!-- Sidebar for host selection -->
+        <div class="sidebar w-[20%] bg-slate-500 text-center h-full space-y-4">
+            <h2 class="text-3xl p-4 font-bold">Select Host</h2>
+            <div class="p-4 px-12 text-2xl font-semibold space-y-4 flex flex-col">
+                <button class="p-5 rounded-2xl border-2"><a href="#" id="host1">Host 1</a></button>
+                <button class="p-5 rounded-2xl border-2"><a href="#" id="host2">Host 2</a></button>
+                <button class="p-5 rounded-2xl border-2"><a href="#" id="host3">Host 3</a></button>
+                <button class="p-5 rounded-2xl border-2"><a href="#" id="host4">Host 4</a></button>
+            </div>
+        </div>
 
-    <!-- Sử dụng ES6 Modules -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"; import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"; const firebaseConfig = { databaseURL: "https://zabbix-7bf0d-default-rtdb.firebaseio.com/"
-        }; const app = initializeApp(firebaseConfig); const db = getDatabase(app); const dbRef = ref(db, 'zabbix'); onValue(dbRef, (snapshot) => { const data = snapshot.val(); console.log(data); document.getElementById('cpu-avg').innerText = data.cpu_avg;
-        document.getElementById('cpu-user').innerText = data.cpu_user; document.getElementById('disk').innerText = data.disk; document.getElementById('memory').innerText = data.memory; document.getElementById('network').innerText = data.network; });
-    </script>
+        <!-- Main content area for displaying charts -->
+        <div class="main-content w-[80%] text-center h-full space-y-4">
+            <h2 class="text-3xl p-4 font-bold">Host Monitoring Data</h2>
+            <div class="chart" id="cpu_avg_chart">CPU Average Chart</div>
+            <div class="chart" id="cpu_user_chart">CPU User Chart</div>
+            <div class="chart" id="memory_chart">Memory Usage Chart</div>
+            <div class="chart" id="disk_chart">Disk Usage Chart</div>
+            <div class="chart" id="network_chart">Network Traffic Chart</div>
+        </div>
+    </div>
+
+
 </body>
 
 </html>
