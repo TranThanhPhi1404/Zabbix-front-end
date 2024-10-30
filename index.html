@@ -7,6 +7,8 @@
     <title>FE-ZABBIX</title>
     <link rel="stylesheet" href="style.css">
     <link href="style-build.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
 </head>
 
 <body>
@@ -26,10 +28,10 @@
         <div class=" w-[80%]  h-full space-y-4 flex flex-col">
             <div class="flex py-4">
                 <h2 class="w-[90%] text-center text-3xl p-4 font-bold">Dữ liệu giám sát máy chủ</h2>
-                <button class="px-4 py-2 font-semibold border-2 rounded-2xl hover:bg-red-500">Dự đoán</button>
+                <button id="predict_button" class="px-4 py-2 font-semibold border-2 rounded-2xl hover:bg-red-500">Dự đoán</button>
             </div>
             <div class="gap-5 flex flex-col md:flex-row md:flex-wrap p-4 px-20">
-                <canvas class="chart flex w-[47%] p-2 " id="cpu_avg_chart">CPU Average Chart</canvas>
+                <canvas class="chart flex w-[47%] p-8 " id="cpu_avg_chart">CPU Average Chart</canvas>
                 <canvas class="chart flex w-[47%] p-2 " id="cpu_user_chart">CPU User Chart</canvas>
                 <canvas class="chart flex w-[47%] p-2 " id="memory_chart">Memory Usage Chart</canvas>
                 <canvas class="chart flex w-[47%] p-2 " id="disk_chart">Disk Usage Chart</canvas>
@@ -42,200 +44,7 @@
     <footer>
         <h1 class="text-center py-5 text-[#999]">© Bản quyền thuộc về Nguyễn Hoàn & Trần Thanh Phi</h1>
     </footer>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"; 
-        import { getDatabase, ref, child, get  , onValue} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js"; 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyDtbRGQKI74nw44DjpCUjHCu47wcmTi7sU",
-            authDomain: "zabbix-7bf0d.firebaseapp.com", 
-            databaseURL: "https://zabbix-7bf0d-default-rtdb.firebaseio.com/", 
-            projectId: "zabbix-7bf0d", 
-            storageBucket: "zabbix-7bf0d.appspot.com", 
-            messagingSenderId: "545016245770", 
-            appId: "1:545016245770:web:3617fa5bfe9a80ff01f9f3",
-            measurementId: "G-2YYWKHK7LR" 
-        }; 
-        const app = initializeApp(firebaseConfig); 
-        const db = getDatabase(app); 
-        console.log("Firebase initialized successfully");
-
-        //phần kết nối với dữ liệu firebase
-        async function checkHostConnection() {
-            console.log("Đang kiểm tra kết nối đến host_10628...");
-
-            const dbRef = ref(db);
-            try {
-                // Thử truy xuất toàn bộ dữ liệu từ đường dẫn host_10628
-                const snapshot = await get(child(dbRef, 'host_10628'));
-                console.log("Kết nối đến đường dẫn:", snapshot.ref.toString());
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    console.log("Kết nối thành công! ");
-                    console.log("Tất cả dữ liệu:", data);
-                    return true; // Nếu có dữ liệu, trả về true
-                } else {
-                    console.log("Không có dữ liệu tại đường dẫn host_10628");
-                    return false; // Nếu không có dữ liệu, trả về false
-                }
-            } catch (error) {
-                console.error("Lỗi khi kết nối đến host_10628:", error);
-                return false; // Nếu có lỗi, trả về false
-            }
-        }
-        
-        // Gọi hàm kiểm tra
-        checkHostConnection().then(isConnected => {
-            if (isConnected) {
-                
-                console.log("Đã kết nối thành công với host_10628");
-                
-            } else {
-                console.log("Không thể kết nối với host_10628");
-            }
-        });
-
-        //Lấy ra dữ liệu
-        async function getAllDataFromFirebase() {
-            const dbRef = ref(db, 'host_10628'); // Đường dẫn tới các mục
-            try {
-                const snapshot = await get(dbRef); // Lấy toàn bộ dữ liệu từ đường dẫn
-                if (snapshot.exists()) {
-                    const allData = snapshot.val(); // Lấy giá trị dữ liệu
-                    console.log("Tất cả dữ liệu:", allData);
-                    return allData; // Trả về tất cả dữ liệu
-                } else {
-                    console.log("Không có dữ liệu");
-                    return null;
-                }
-            } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu:", error);
-            }
-        }
-
-        function drawChart(ctx, labels, data, label) {
-            const myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels.map(t => new Date(t * 1000).toLocaleString()), // Chuyển đổi timestamp
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 2,
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Time'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: label
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Lắng nghe sự kiện thay đổi dữ liệu
-        function listenForDataChanges(hostId) {
-            const dbRef = ref(db, hostId); // Đường dẫn tới các mục
-            onValue(dbRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const allData = snapshot.val(); // Lấy giá trị dữ liệu
-                    console.log("Dữ liệu mới:", hostId, ":", allData);
-                    renderCharts(allData); // Cập nhật biểu đồ với dữ liệu mới
-                } else {
-                    console.log("Không có dữ liệu" , hostId);
-                }
-            }, (error) => {
-                console.error("Lỗi khi lắng nghe dữ liệu:", error);
-            });
-        }
-
-
-        async function renderCharts(allData) {
-            
-            
-            if (allData) {
-                // Biểu đồ CPU Average
-                const cpuAvgData = allData.Cpu_Avg;
-                const cpuAvgTimestamps = Object.values(cpuAvgData).map(item => item.timestamp);
-                const cpuAvgValues = Object.values(cpuAvgData).map(item => parseFloat(item.data[0].lastvalue));
-                const cpuAvgCtx = document.getElementById('cpu_avg_chart').getContext('2d');
-                drawChart(cpuAvgCtx, cpuAvgTimestamps, cpuAvgValues, 'CPU Average');
-        
-                // Biểu đồ CPU User
-                const cpuUserData = allData.Cpu_User;
-                const cpuUserTimestamps = Object.values(cpuUserData).map(item => item.timestamp);
-                const cpuUserValues = Object.values(cpuUserData).map(item => parseFloat(item.data[0].lastvalue));
-                const cpuUserCtx = document.getElementById('cpu_user_chart').getContext('2d');
-                drawChart(cpuUserCtx, cpuUserTimestamps, cpuUserValues, 'CPU User');
-        
-                // Biểu đồ Memory Usage
-                const memoryData = allData.Memory;
-                const memoryTimestamps = Object.values(memoryData).map(item => item.timestamp);
-                const totalMemory = Object.values(memoryData).map(item => parseFloat(item.data[0].lastvalue));
-                const usedMemory = Object.values(memoryData).map(item => parseFloat(item.data[1].lastvalue));
-                const memoryCtx = document.getElementById('memory_chart').getContext('2d');
-                drawChart(memoryCtx, memoryTimestamps, usedMemory, 'Memory Used');
-                
-                // Biểu đồ Disk Usage
-                const diskData = allData.Disk;
-                const diskTimestamps = Object.values(diskData).map(item => item.timestamp);
-                const diskValues = Object.values(diskData).map(item => parseFloat(item.data[0].lastvalue));
-                const diskCtx = document.getElementById('disk_chart').getContext('2d');
-                drawChart(diskCtx, diskTimestamps, diskValues, 'Disk Usage');
-        
-                // Biểu đồ Network Traffic
-                const networkData = allData.Network;
-                const networkTimestamps = Object.values(networkData).map(item => item.timestamp);
-                const networkValues = Object.values(networkData).map(item => parseFloat(item.data.lastvalue)); // Không phải mảng
-                const networkCtx = document.getElementById('network_chart').getContext('2d');
-                drawChart(networkCtx, networkTimestamps, networkValues, 'Network Traffic');
-            }
-        }
-        
-        document.getElementById('host1').addEventListener('click', (event) => {
-            event.preventDefault(); 
-            listenForDataChanges('host_10628');
-            renderCharts(); 
-        });
-        document.getElementById('host2').addEventListener('click', (event) => {
-            event.preventDefault();
-            listenForDataChanges();
-            
-        });
-
-        document.getElementById('host3').addEventListener('click', (event) => {
-            event.preventDefault();
-            listenForDataChanges();
-
-        });
-
-        document.getElementById('host4').addEventListener('click', (event) => {
-            event.preventDefault();
-            listenForDataChanges();
-
-        });
-        window.onload = () => {
-            renderCharts(); // Gọi biểu đồ cho Host 1 khi trang tải lần đầu
-        };
-    </script>
-
-  
-
+    <script type="module" src="main.js"></script>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-
 </html>
