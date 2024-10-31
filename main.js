@@ -17,11 +17,11 @@ console.log("Firebase kết nối thành công");
 
 
 //Vẽ biểu đồ
-function drawChart(ctx, labels, data, label ,  predictionData = []) {
+function drawChart(ctx, labels, data, label ) {
     const myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels.map(t => new Date(t * 1000).toLocaleString()), // Chuyển đổi timestamp
+            labels: labels.map(t => new Date(t * 1000).toLocaleString()), 
             datasets: [
                 {
                     label: label,
@@ -70,8 +70,12 @@ function listenForDataChanges(hostId) {
     });
 }
 
-
 let currentChartData = [];
+let currentCpuUserData = [];
+let currentMemoryData = [];
+let currentDiskData = [];
+let currentNetworkData = [];
+
 let cpuAvgChart, cpuUserChart, memoryChart, diskChart, networkChart;
 async function renderCharts(allData) {
     
@@ -82,12 +86,10 @@ async function renderCharts(allData) {
         const cpuAvgData = allData.Cpu_Avg;
         const cpuAvgTimestamps = Object.values(cpuAvgData).map(item =>item.timestamp);
         const cpuAvgValues = Object.values(cpuAvgData).map(item => parseFloat(item.data[0].lastvalue));
-        
         currentChartData = cpuAvgTimestamps.map((timestamp, index) => ({
             key: timestamp, 
             value: cpuAvgValues[index] 
         }));
-
         const cpuAvgCtx = document.getElementById('cpu_avg_chart').getContext('2d');
         // const predictionData = await getPredictionData(24, cpuAvgValues);
         if (cpuAvgChart) {
@@ -100,30 +102,61 @@ async function renderCharts(allData) {
         const cpuUserData = allData.Cpu_User;
         const cpuUserTimestamps = Object.values(cpuUserData).map(item => item.timestamp);
         const cpuUserValues = Object.values(cpuUserData).map(item => parseFloat(item.data[0].lastvalue));
+        currentCpuUserData = cpuUserTimestamps.map((timestamp, index) => ({
+            key: timestamp,
+            value: cpuUserValues[index]
+        }));
         const cpuUserCtx = document.getElementById('cpu_user_chart').getContext('2d');
-        drawChart(cpuUserCtx, cpuUserTimestamps, cpuUserValues, 'CPU User');
+        if (cpuUserChart) {
+            cpuUserChart.destroy();
+            cpuUserChart = null;
+        }
+        cpuUserChart = drawChart(cpuUserCtx, cpuUserTimestamps, cpuUserValues, 'CPU User');
 
         // Biểu đồ Memory Usage
         const memoryData = allData.Memory;
         const memoryTimestamps = Object.values(memoryData).map(item => item.timestamp);
-        const totalMemory = Object.values(memoryData).map(item => parseFloat(item.data[0].lastvalue));
-        const usedMemory = Object.values(memoryData).map(item => parseFloat(item.data[1].lastvalue));
+        const usedMemory = Object.values(memoryData).map(item => parseFloat(item.data[0].lastvalue));
+        currentMemoryData = memoryTimestamps.map((timestamp, index) => ({
+            key: timestamp,
+            value: usedMemory[index]
+        }));
         const memoryCtx = document.getElementById('memory_chart').getContext('2d');
-        drawChart(memoryCtx, memoryTimestamps, usedMemory, 'Memory Used');
+        if (memoryChart) {
+            memoryChart.destroy();
+            memoryChart  = null;
+        }
+        memoryChart = drawChart(memoryCtx, memoryTimestamps, usedMemory, 'Memory Used');
         
         // Biểu đồ Disk Usage
         const diskData = allData.Disk;
         const diskTimestamps = Object.values(diskData).map(item => item.timestamp);
         const diskValues = Object.values(diskData).map(item => parseFloat(item.data[0].lastvalue));
+        currentDiskData = diskTimestamps.map((timestamp, index) => ({
+            key: timestamp,
+            value: diskValues[index]
+        }));
         const diskCtx = document.getElementById('disk_chart').getContext('2d');
-        drawChart(diskCtx, diskTimestamps, diskValues, 'Disk Usage');
+        if (diskChart) {
+            diskChart.destroy();
+            diskChart  = null;
+        }
+        diskChart = drawChart(diskCtx, diskTimestamps, diskValues, 'Disk Usage');
 
         // Biểu đồ Network Traffic
         const networkData = allData.Network;
         const networkTimestamps = Object.values(networkData).map(item => item.timestamp);
-        const networkValues = Object.values(networkData).map(item => parseFloat(item.data.lastvalue)); // Không phải mảng
+        const networkValues = Object.values(networkData).map(item => parseFloat(item.data.lastvalue));
+        currentNetworkData = networkTimestamps.map((timestamp, index) => ({
+            key: timestamp,
+            value: networkValues[index]
+        }));
         const networkCtx = document.getElementById('network_chart').getContext('2d');
-        drawChart(networkCtx, networkTimestamps, networkValues, 'Network Traffic');
+        if (networkChart) {
+            networkChart.destroy();
+            networkChart  = null;
+        }
+        networkChart = drawChart(networkCtx, networkTimestamps, networkValues, 'Network Traffic');
     }
 }
 
@@ -137,13 +170,11 @@ document.getElementById('host2').addEventListener('click', (event) => {
     listenForDataChanges();
     
 });
-
 document.getElementById('host3').addEventListener('click', (event) => {
     event.preventDefault();
     listenForDataChanges();
 
 });
-
 document.getElementById('host4').addEventListener('click', (event) => {
     event.preventDefault();
     listenForDataChanges();
@@ -152,8 +183,6 @@ document.getElementById('host4').addEventListener('click', (event) => {
 window.onload = () => {
     renderCharts(); 
 };
-
-// Phần dự đoán
 
 // Hàm gọi API dự đoán
 async function getPredictionData(time, data) {
@@ -198,67 +227,123 @@ async function getPredictionData(time, data) {
     }
 }
 function formatTimestamp(timestampString) {
-    // Chuyển đổi timestamp từ giây sang miligiây
     const timestampInSeconds = parseFloat(timestampString);
-    const timestampInMilliseconds = timestampInSeconds * 1000; // Chuyển đổi sang miligiây
-
-    const date = new Date(timestampInMilliseconds); // Chuyển đổi từ miligiây sang đối tượng Date
-    if (isNaN(date.getTime())) { // Kiểm tra xem ngày có hợp lệ không
+    const timestampInMilliseconds = timestampInSeconds * 1000; 
+    const date = new Date(timestampInMilliseconds); 
+    if (isNaN(date.getTime())) { 
         console.error("Timestamp không hợp lệ:", timestampString);
-        return null; // Trả về null nếu không hợp lệ
+        return null; 
     }
-    return date.toISOString().slice(0, 19).replace('T', ' '); // Định dạng YYYY-MM-DD HH:MM:SS
+    return date.toISOString().slice(0, 19).replace('T', ' '); 
 }
 
 
 
-// Hàm xử lý khi bấm nút Dự đoán
+
+
+
 async function handlePrediction() {
-    if (currentChartData.length > 0) {
-        const time = 24; // Thời gian dự đoán (giờ)
-        const data = currentChartData.map(item => {
-            const formattedKey = formatTimestamp(item.key); // Định dạng timestamp
-            return {
-                key: formattedKey, // Đảm bảo timestamp đã được định dạng
-                value: item.value // last value
-            };
-        }).filter(item => item.key !== null);
+    async function processPrediction(chartId, chartData, chartLabel, chartInstance) {
+        if (chartData.length > 0) {
+            const time = 24; 
+            const data = chartData.map(item => {
+                const formattedKey = formatTimestamp(item.key);
+                return {
+                    key: formattedKey,
+                    value: item.value
+                };
+            }).filter(item => item.key !== null);
 
-        if (data.length === 0) {
-            console.error("Không có dữ liệu hợp lệ để gửi đến API.");
-            return; // Dừng hàm nếu không có dữ liệu hợp lệ
-        }
-
-        const predictionData = await getPredictionData(time, data);
-
-        // Kiểm tra phản hồi từ API
-        if (predictionData) {
-            console.log("Dữ liệu dự đoán:", predictionData);
-            // Xử lý và hiển thị dữ liệu dự đoán nếu cần
-            const lastTimestamp = currentChartData[currentChartData.length - 1].key;
-            const lastTimestampInSeconds = Math.floor(new Date(lastTimestamp).getTime() / 1000);
-            const predictedTimestamps = generateTimestamps(lastTimestampInSeconds + 3600, predictionData.length); // Dự đoán mỗi giờ
-
-            // Vẽ biểu đồ với dữ liệu hiện tại và dữ liệu dự đoán
-            const cpuAvgCtx = document.getElementById('cpu_avg_chart').getContext('2d');
-            const allTimestamps = currentChartData.map(item => item.key).concat(predictedTimestamps);
-            const allValues = currentChartData.map(item => item.value).concat(predictionData);
-            
-            const existingChart = Chart.getChart('cpu_avg_chart');
-            if (existingChart) {
-                existingChart.destroy();
+            if (data.length === 0) {
+                console.error(`Không có dữ liệu hợp lệ để gửi đến API cho ${chartLabel}.`);
+                return;
             }
-            
 
-            // Vẽ biểu đồ mới với cả dữ liệu hiện tại và dự đoán
-            cpuAvgChart = drawChart(cpuAvgCtx, allTimestamps, allValues, 'CPU Average');
+            const predictionData = await getPredictionData(time, data);
+
+            if (predictionData && predictionData.length > 0) {
+                
+                const predictedValues = predictionData.map(item => item); // Dữ liệu dự đoán từ API
+                console.log("Predicted values:", predictedValues);
+            
+                const lastTimestamp = chartData[chartData.length - 1].key;
+                const lastTimestampInSeconds = Math.floor(new Date(lastTimestamp).getTime() / 1000);
+                const predictedTimestamps = generateTimestamps(lastTimestampInSeconds + 3600, predictedValues.length);
+            
+                const chartCtx = document.getElementById(chartId).getContext('2d');
+                
+                // Kết hợp dữ liệu thực tế và dữ liệu dự đoán
+                const allTimestamps = [...chartData.map(item => item.key), ...predictedTimestamps];
+                const allValues = [...chartData.map(item => item.value), ...predictedValues];
+
+                console.log("Timestamps hiện tại:", chartData.map(item => item.key));
+                console.log("Mốc thời gian cuối cùng:", lastTimestampInSeconds);
+                console.log("Mốc thời gian dự đoán:", predictedTimestamps);
+                console.log("Giá trị dự đoán:", predictedValues);
+
+                const existingChart = Chart.getChart(chartId);
+                if (existingChart) {
+                    existingChart.destroy();
+                }
+            
+                // Vẽ lại biểu đồ với dữ liệu thực tế và dự đoán
+                const dataset = [
+                    {
+                        label: chartLabel,
+                        data: allValues,
+                        borderColor: 'rgba(75, 192, 192, 1)', // Màu cho dữ liệu thực tế
+                        borderWidth: 2,
+                        fill: false,
+                    },
+                    // {
+                    //     label: `Dự đoán ${chartLabel}`,
+                    //     data: predictedValues,
+                    //     borderColor: 'rgba(255, 99, 132, 1)', // Màu cho dữ liệu dự đoán
+                    //     borderWidth: 2,
+                    //     fill: false,
+                    // },
+                ];
+            
+                const myChart = new Chart(chartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [...allTimestamps.map(t => new Date(t * 1000).toLocaleString())],
+                        datasets: dataset, // Sử dụng dataset với cả dữ liệu thực tế và dự đoán
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Time',
+                                },
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: chartLabel,
+                                },
+                            },
+                        },
+                    },
+                });
+            } else {
+                console.log(`Không có dữ liệu dự đoán cho ${chartLabel}.`);
+            }
         } else {
-            console.log("Không có dữ liệu dự đoán.");
+            console.log(`Không có dữ liệu biểu đồ để dự đoán cho ${chartLabel}.`);
         }
-    } else {
-        console.log("Không có dữ liệu biểu đồ để dự đoán.");
     }
+
+    // Dự đoán cho các biểu đồ
+    await processPrediction('cpu_avg_chart', currentChartData, 'CPU Average', cpuAvgChart);
+    await processPrediction('cpu_user_chart', currentCpuUserData, 'CPU User', cpuUserChart);
+    await processPrediction('memory_chart', currentMemoryData, 'Memory Usage', memoryChart);
+    await processPrediction('disk_chart', currentDiskData, 'Disk Usage', diskChart);
+    await processPrediction('network_chart', currentNetworkData, 'Network Traffic', networkChart);
 }
+
 
 document.getElementById('predict_button').addEventListener('click', handlePrediction);
 
