@@ -10,7 +10,6 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
 </head>
-
 <body>
     <div class=" flex w-full h-full">
         <!-- Sidebar for host selection -->
@@ -21,7 +20,6 @@
                 <button id="host2" class="p-2 rounded-2xl border-2 hover:bg-red-600"> Máy 2</button>
                 <button id="host3" class="p-2 rounded-2xl border-2 hover:bg-red-700"> Máy 3</button>
                 <button id="host4" class="p-2 rounded-2xl border-2 hover:bg-red-800"> Máy 4</button>
-                <button id="predict_button" class="px-4 py-2 font-semibold border-2 rounded-2xl hover:bg-red-500">Dự đoán</button>
 
             </div>
         </div>
@@ -29,7 +27,7 @@
         <!-- Main content area for displaying charts -->
         <div class=" w-[80%]  h-full space-y-4 flex flex-col">
             <div class="flex py-4">
-                <h2 class="w-[90%] text-center text-3xl p-4 font-bold">Dữ liệu giám sát máy chủ</h2>
+                <h2 class="w-[90%] text-center text-3xl p-4 font-bold">Trang dự đoán dữ liệu</h2>
             </div>
             <div class="gap-5 flex flex-col md:flex-row md:flex-wrap p-4 px-20">
                 <canvas class="chart flex" id="cpu_avg_chart">CPU Average Chart</canvas>
@@ -41,11 +39,10 @@
             </div>
         </div>
     </div>
-
     <footer>
         <h1 class="text-center py-5 text-[#999]">© Bản quyền thuộc về Nguyễn Hoàn & Trần Thanh Phi</h1>
     </footer>
-    <script type="module" src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="prediction.js"></script>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </html>

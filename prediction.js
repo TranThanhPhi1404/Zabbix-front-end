@@ -208,27 +208,29 @@ function drawChart(ctx, labels, data, label, predictedValues = [], predictedTime
 }
 
 
-async function handlePrediction() {
-    async function processPrediction(chartId, chartData, chartLabel) {
-        console.log(`Processing prediction for ${chartLabel}`);
+async function handlePrediction(hostId) {
+    async function processPrediction(chartId, chartData, chartLabel, hostId) {
+        console.log(`Processing prediction for ${chartLabel} of host ${hostId}`);
         if (chartData.length > 0) {
             const time = 24; // Dự đoán cho 24 giờ tiếp theo
             const data = chartData.map(item => ({
                 key: formatTimestamp(item.key),
                 value: item.value
             }));
-    
-            const predictionData = await getPredictionData(time, data);
+
+            // Truyền hostId vào hàm getPredictionData
+            const predictionData = await getPredictionData(time, data); 
             console.log('Dữ liệu dự đoán nhận được:', predictionData);
+            
             if (predictionData) {
                 // Cập nhật predictedData với dữ liệu mới
                 predictedData[chartLabel.toLowerCase()] = predictionData[chartLabel.toLowerCase()] || [];
                 localStorage.setItem(`${chartLabel.toLowerCase()}PredictedData`, JSON.stringify(predictedData[chartLabel.toLowerCase()]));
             }
+            
             let predictedValues = [];
             let predictedTimestamps = [];
-            
-    
+
             if (predictionData && Array.isArray(predictionData) && predictionData.length > 0) {
                 predictedValues = predictionData;
                 const lastTimestamp = chartData[chartData.length - 1].key;
@@ -236,46 +238,42 @@ async function handlePrediction() {
             } else {
                 // Sử dụng dữ liệu dự đoán đã lưu
                 if (predictedData && predictedData[chartLabel]) {
-                    
                     predictedValues = predictedData[chartLabel];
                     console.log('Dữ liệu dự đoán từ hàm Process:', predictedValues);
                 } else {
-                    console.error(`Không có dữ liệu dự đoán cho ${chartLabel}`);
+                    console.error(`Không có dữ liệu dự đoán cho ${chartLabel} của host ${hostId}`);
                 }
-                
+
                 predictedTimestamps = generateTimestamps(Number(chartData[chartData.length - 1].key) + 3600, predictedValues.length);
             }
 
-            // Ghi log để kiểm tra giá trị
-            // console.log('predictedValues trước khi vẽ:', predictedValues);
-            // console.log('predictedTimestamps trước khi vẽ:', predictedTimestamps);
-
             // Kiểm tra dữ liệu trước khi vẽ biểu đồ
             if (predictedValues.length === 0) {
-                console.warn(`predictedValues vẫn rỗng cho ${chartLabel}. Không thể vẽ biểu đồ.`);
+                console.warn(`predictedValues vẫn rỗng cho ${chartLabel} của host ${hostId}. Không thể vẽ biểu đồ.`);
                 return; // Thoát ra nếu không có dữ liệu dự đoán
             }
             localStorage.setItem('predictedData', JSON.stringify(predictedData));
             console.log('Predicted data saved to localStorage:', predictedData);
+            
             const chartCtx = document.getElementById(chartId).getContext('2d');
             drawChart(chartCtx, chartData.map(item => item.key), chartData.map(item => item.value), chartLabel, predictedValues, predictedTimestamps);
         }
     }
+
     // Sử dụng Promise.all để chạy các biểu đồ song song thay vì async/await từng cái
     const predictionPromises = [
-        processPrediction('cpu_avg_chart', currentChartData, 'CPU Average'),
-        processPrediction('cpu_user_chart', currentCpuUserData, 'CPU User'),
-        processPrediction('disk_chart', currentDiskData, 'Disk Usage'),
-        processPrediction('memory_chart', currentMemoryData, 'Memory Usage'),
-        processPrediction('network_chart', currentNetworkData, 'Network Traffic')
+        processPrediction('cpu_avg_chart', currentChartData, 'CPU Average', hostId),
+        processPrediction('cpu_user_chart', currentCpuUserData, 'CPU User', hostId),
+        processPrediction('disk_chart', currentDiskData, 'Disk Usage', hostId),
+        processPrediction('memory_chart', currentMemoryData, 'Memory Usage', hostId),
+        processPrediction('network_chart', currentNetworkData, 'Network Traffic', hostId)
     ];
 
     // Chờ tất cả các dự đoán hoàn thành
     await Promise.all(predictionPromises);
     console.log('Tất cả các dự đoán đã hoàn thành.');
-
-    
 }
+
 
 
 async function getPredictionData(time, data) {
@@ -335,13 +333,18 @@ async function getPredictionData(time, data) {
     }
 }
 
-// Lắng nghe sự kiện thay đổi dữ liệu
-function listenForDataChanges(hostId) {
+
+async function listenForDataChanges(hostId) {
     const dbRef = ref(db, hostId); // Đường dẫn tới các mục
-    onValue(dbRef, (snapshot) => {
+    
+    try {
+        // Lấy dữ liệu từ Firebase một lần
+        const snapshot = await get(dbRef);
+
         if (snapshot.exists()) {
             const allData = snapshot.val(); // Lấy giá trị dữ liệu
-            console.log('Tất cả dữ liệu khi thay đổi: ',allData);
+            console.log('Tất cả dữ liệu khi thay đổi: ', allData);
+            
             const cpuAvgData = allData.Cpu_Avg;
             const cpuUserData = allData.Cpu_User;
             const diskData = allData.Disk;
@@ -355,6 +358,7 @@ function listenForDataChanges(hostId) {
             // Lấy timestamps và giá trị của CPU User
             const cpuUserTimestamps = Object.values(cpuUserData).map(item => item.timestamp);
             const cpuUserValues = Object.values(cpuUserData).map(item => parseFloat(item.data[0].lastvalue));
+
             // Lấy timestamps và giá trị của Disk
             const diskTimestamps = Object.values(diskData).map(item => item.timestamp);
             const diskValues = Object.values(diskData).map(item => parseFloat(item.data[0].lastvalue));
@@ -366,7 +370,7 @@ function listenForDataChanges(hostId) {
             // Lấy timestamps và giá trị của Network
             const networkTimestamps = Object.values(networkData).map(item => item.timestamp);
             const networkValues = Object.values(networkData).map(item => parseFloat(item.data.lastvalue));
-            
+
             // Gán dữ liệu vào các biến current
             currentChartData = Object.values(cpuAvgData).map(item => ({
                 key: item.timestamp,
@@ -388,29 +392,18 @@ function listenForDataChanges(hostId) {
 
             currentNetworkData = Object.values(networkData).map(item => ({
                 key: item.timestamp,
-                value: parseFloat(item.data.lastvalue) 
+                value: parseFloat(item.data.lastvalue)
             }));
-            
-            // Gọi hàm vẽ biểu đồ với dữ liệu đã lấy được
-            renderCharts({
-                cpuAvgTimestamps,
-                cpuAvgValues,
-                cpuUserTimestamps,
-                cpuUserValues,
-                diskTimestamps,
-                diskValues,
-                memoryTimestamps,
-                memoryValues,
-                networkTimestamps,
-                networkValues,
-                
-            });
+
+            // Gọi hàm xử lý dự đoán ngay sau khi lấy dữ liệu
+            await handlePrediction(hostId);
+
         } else {
-            console.log("Không có dữ liệu" , hostId);
+            console.log("Không có dữ liệu", hostId);
         }
-    }, (error) => {
-        console.error("Lỗi khi lắng nghe dữ liệu:", error);
-    });
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+    }
 }
 function generateTimestamps(startTimestamp, count) {
     const timestamps = [];
@@ -430,30 +423,28 @@ function formatTimestamp(timestampString) {
     }
     return date.toISOString().slice(0, 19).replace('T', ' '); 
 }
-document.getElementById('predict_button').addEventListener('click', () => {
-    console.log('Button predict clicked');
-    // handlePrediction();
-    window.location.href = 'prediction.html';
-});
+
+
 document.getElementById('host1').addEventListener('click', (event) => {
     event.preventDefault(); 
     listenForDataChanges('host_10628');
-    renderCharts(); 
+    
+    
 });
 document.getElementById('host2').addEventListener('click', (event) => {
     event.preventDefault();
-    listenForDataChanges();
-    renderCharts(); 
+    handlePrediction();
+    
 });
 document.getElementById('host3').addEventListener('click', (event) => {
     event.preventDefault();
-    listenForDataChanges();
-    renderCharts(); 
+    handlePrediction();
+     
 });
 document.getElementById('host4').addEventListener('click', (event) => {
     event.preventDefault();
-    listenForDataChanges();
-    renderCharts(); 
+    handlePrediction();
+     
 });
 window.onload = () => {
     renderCharts(); 
