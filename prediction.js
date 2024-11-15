@@ -117,52 +117,118 @@ function drawChart(ctx, labels, data, label, predictedValues = [], predictedTime
     if (chartInstance) {
         chartInstance.destroy();
     }
-    if (ctx.canvas.id === 'cpu_avg_chart' && predictedData.cpuAvg.length > 0) {
-        predictedValues = predictedData.cpuAvg;
-        predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
-    } else if (ctx.canvas.id === 'cpu_user_chart' && predictedData.cpuUser.length > 0) {
-        predictedValues = predictedData.cpuUser;
-        predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
-    } else if (ctx.canvas.id === 'disk_chart' && predictedData.disk.length > 0) {
-        predictedValues = predictedData.disk;
-        predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
-    } else if (ctx.canvas.id === 'memory_chart' && predictedData.memory.length > 0) {
-        predictedValues = predictedData.memory;
-        predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
-    } else if (ctx.canvas.id === 'network_chart' && predictedData.network.length > 0) {
-        predictedValues = predictedData.network;
-        predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
-    }
+    // Lấy giá trị cuối cùng của dữ liệu thực tế
+    const lastRealTimestamp = labels.length > 0 ? labels[labels.length - 1] : null;
+    const lastRealValue = data.length > 0 ? data[data.length - 1] : null;
+
+    // if (ctx.canvas.id === 'cpu_avg_chart' && predictedData.cpuAvg.length > 0) {
+    //     predictedValues = predictedData.cpuAvg;
+    //     predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
+    // } else if (ctx.canvas.id === 'cpu_user_chart' && predictedData.cpuUser.length > 0) {
+    //     predictedValues = predictedData.cpuUser;
+    //     predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
+    // } else if (ctx.canvas.id === 'disk_chart' && predictedData.disk.length > 0) {
+    //     predictedValues = predictedData.disk;
+    //     predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
+    // } else if (ctx.canvas.id === 'memory_chart' && predictedData.memory.length > 0) {
+    //     predictedValues = predictedData.memory;
+    //     predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
+    // } else if (ctx.canvas.id === 'network_chart' && predictedData.network.length > 0) {
+    //     predictedValues = predictedData.network;
+    //     predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
+    // }
 
     // Kết hợp nhãn và dữ liệu
-    const allLabels = [
-        ...labels.map(t => new Date(t * 1000).toLocaleString()), 
+    
+    if (predictedValues.length > 0 && lastRealTimestamp) {
+        predictedTimestamps = generateTimestamps(Number(lastRealTimestamp) + 3600, predictedValues.length);
+    }
+
+    // const allLabels = [
+    //     ...labels.map(t => new Date(t * 1000).toLocaleString()), 
+    //     ...predictedTimestamps.map(t => new Date(t * 1000).toLocaleString())
+    // ];
+
+    // // Kết hợp dữ liệu
+    // const combinedData = [
+    //     ...data,                     // Dữ liệu thực tế
+    //     ...Array(predictedValues.length).fill(null) // Dữ liệu dự đoán (null cho đến khi giá trị dự đoán)
+    // ];
+    // const datasets = [{
+    //     label: label,
+    //     data: combinedData,
+    //     borderColor: 'rgba(75, 192, 192, 1)',
+    //     borderWidth: 2,
+    //     fill: false,
+    // }];
+    // if (predictedValues.length > 0) {
+    //     // Thêm dataset cho đường dự đoán
+    //     datasets.push({
+    //         label: `Dự đoán ${label}`,
+    //         data: [...Array(data.length).fill(null), ...predictedValues],
+    //         borderColor: 'rgba(255, 99, 132, 1)', // Màu sắc cho đường dự đoán
+    //         borderWidth: 2,
+    //         fill: false,
+    //     });
+    // }
+    
+    // // Tạo biểu đồ
+    // const myChart = new Chart(ctx, {
+    //     type: 'line',
+    //     data: {
+    //         labels: allLabels,
+    //         datasets: datasets,
+    //     },
+    //     options: {
+    //         responsive: true,
+    //         scales: {
+    //             x: {
+    //                 title: {
+    //                     display: true,
+    //                     text: 'Thời gian'
+    //                 }
+    //             },
+    //             y: {
+    //                 title: {
+    //                     display: true,
+    //                     text: label
+    //                 }
+    //             }
+    //         }
+    //     }
+    // });
+     // Kết hợp nhãn cuối cùng và nhãn dự đoán
+     const allLabels = [
+        lastRealTimestamp ? new Date(lastRealTimestamp * 1000).toLocaleString() : 'No Data', 
         ...predictedTimestamps.map(t => new Date(t * 1000).toLocaleString())
     ];
 
-    // Kết hợp dữ liệu
+    // Kết hợp dữ liệu cuối cùng và dữ liệu dự đoán
     const combinedData = [
-        ...data,                     // Dữ liệu thực tế
-        ...Array(predictedValues.length).fill(null) // Dữ liệu dự đoán (null cho đến khi giá trị dự đoán)
+        lastRealValue, // Giá trị thực tế cuối cùng
+        ...Array(predictedValues.length).fill(null) // Giá trị dự đoán (null cho đến khi dự đoán)
     ];
+
+    // Tạo dataset cho dữ liệu thực tế cuối cùng
     const datasets = [{
-        label: label,
+        label: `${label} (Thực tế)`,
         data: combinedData,
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 2,
         fill: false,
     }];
+
+    // Thêm dataset cho dữ liệu dự đoán
     if (predictedValues.length > 0) {
-        // Thêm dataset cho đường dự đoán
         datasets.push({
             label: `Dự đoán ${label}`,
-            data: [...Array(data.length).fill(null), ...predictedValues],
+            data: [...Array(1).fill(null), ...predictedValues], // null cho dữ liệu thực tế, chỉ có dữ liệu dự đoán
             borderColor: 'rgba(255, 99, 132, 1)', // Màu sắc cho đường dự đoán
             borderWidth: 2,
             fill: false,
         });
     }
-    
+
     // Tạo biểu đồ
     const myChart = new Chart(ctx, {
         type: 'line',
@@ -202,6 +268,11 @@ function drawChart(ctx, labels, data, label, predictedValues = [], predictedTime
     console.log("Biểu đồ đã được vẽ với dữ liệu:",label, {
         labels: allLabels,
         data: combinedData,
+        predictedValues: predictedValues,
+        predictedTimestamps: predictedTimestamps
+    });
+    console.log("Biểu đồ đã được vẽ với dữ liệu cuối cùng và dự đoán:", label, {
+        lastRealValue: lastRealValue,
         predictedValues: predictedValues,
         predictedTimestamps: predictedTimestamps
     });
@@ -276,12 +347,73 @@ async function handlePrediction(hostId) {
 
 
 
-async function getPredictionData(time, data) {
-    try {
-        const formattedData = data.map(item => {
+// async function getPredictionData(time, data) {
+//     try {
+//         const formattedData = data.map(item => {
 
+//             return {
+//                 key: item.key, 
+//                 value: item.value
+//             };
+//         }).filter(Boolean);
+
+//         if (formattedData.length === 0) {
+//             console.error("Không có dữ liệu hợp lệ để gửi đến API.");
+//             return null;
+//         }
+
+//         console.log("Dữ liệu sẽ được gửi đến API:", formattedData);
+
+//         const response = await fetch("https://shinichikudo2002kks.pythonanywhere.com/predict", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify({
+//                 time: time,   
+//                 data: formattedData   
+//             })
+//         });
+
+//         // Kiểm tra mã trạng thái của phản hồi
+//         if (!response.ok) {
+//             throw new Error(`Lỗi API: ${response.status}`);
+//         }
+
+//         const predictionData = await response.json();
+//         console.log("Dữ liệu dự đoán nhận được từ API của hàm getPre:", predictionData);
+
+//         if (predictionData && predictionData.length > 0) {
+//             // Lưu dự đoán vào localStorage mà không cần sử dụng label
+//             const predictionToSave = {
+//                 values: predictionData || [],
+//                 time: time || []
+//             };
+
+//             // Lưu vào localStorage với tên cố định cho tất cả biểu đồ
+//             localStorage.setItem('predictionData', JSON.stringify(predictionToSave));
+//             console.log('Dữ liệu được lưu:', predictionToSave);
+//         } else {
+//             console.error("Dữ liệu dự đoán không hợp lệ hoặc không có dữ liệu.");
+//         }
+
+//         return predictionData;
+//     } catch (error) {
+//         console.error("Lỗi khi gọi API dự đoán:", error);
+//         return null;
+//     }
+// }
+async function getPredictionData(time, data) {
+    // Get the loading screen element
+    const loadingScreen = document.getElementById("loading-screen");
+
+    try {
+        // Show the loading screen
+        loadingScreen.classList.remove("hidden");
+
+        const formattedData = data.map(item => {
             return {
-                key: item.key, 
+                key: item.key,
                 value: item.value
             };
         }).filter(Boolean);
@@ -299,8 +431,8 @@ async function getPredictionData(time, data) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                time: time,   
-                data: formattedData   
+                time: time,
+                data: formattedData
             })
         });
 
@@ -330,8 +462,12 @@ async function getPredictionData(time, data) {
     } catch (error) {
         console.error("Lỗi khi gọi API dự đoán:", error);
         return null;
+    } finally {
+        // Hide the loading screen
+        loadingScreen.classList.add("hidden");
     }
 }
+
 
 
 async function listenForDataChanges(hostId) {

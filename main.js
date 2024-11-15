@@ -456,5 +456,5 @@ document.getElementById('host4').addEventListener('click', (event) => {
     renderCharts(); 
 });
 window.onload = () => {
-    renderCharts(); 
+    document.getElementById('host1').click(); 
 };

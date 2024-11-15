@@ -29,6 +29,10 @@
             <div class="flex py-4">
                 <h2 class="w-[90%] text-center text-3xl p-4 font-bold">Trang dự đoán dữ liệu</h2>
             </div>
+            <div id="loading-screen" class="hidden inset-0 bg-gray-500 bg-opacity-75 items-center justify-center">
+                <div class="text-black text-2xl text-center">Đang tải dữ liệu dự đoán...</div>
+            </div>
+            
             <div class="gap-5 flex flex-col md:flex-row md:flex-wrap p-4 px-20">
                 <canvas class="chart flex" id="cpu_avg_chart">CPU Average Chart</canvas>
                 <canvas class="chart flex" id="cpu_user_chart">CPU User Chart</canvas>
