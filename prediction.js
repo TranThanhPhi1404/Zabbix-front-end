@@ -222,10 +222,11 @@ function drawChart(ctx, labels, data, label, predictedValues = [], predictedTime
     if (predictedValues.length > 0) {
         datasets.push({
             label: `Dự đoán ${label}`,
-            data: [...Array(1).fill(null), ...predictedValues], // null cho dữ liệu thực tế, chỉ có dữ liệu dự đoán
+            data: [lastRealValue, ...predictedValues], // null cho dữ liệu thực tế, chỉ có dữ liệu dự đoán
             borderColor: 'rgba(255, 99, 132, 1)', // Màu sắc cho đường dự đoán
             borderWidth: 2,
             fill: false,
+            borderDash: [5, 5],
         });
     }
 
