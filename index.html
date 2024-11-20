@@ -8,23 +8,22 @@
     <link rel="stylesheet" href="style.css">
     <link href="style-build.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
 </head>
 
 <body>
     <div class=" flex w-full h-full">
-        <!-- Sidebar for host selection -->
-        <div class=" w-[20%] bg-slate-500 text-center h-auto space-y-4 ">
-            <h2 class="text-2xl md:text-3xl p-4 font-bold">Máy chủ</h2>
-            <div class="p-4 px-2 md:px-12 md:text-2xl font-semibold space-y-10 flex flex-col">
-                <button id="host1" class="p-2 rounded-2xl border-2 hover:bg-red-500"> Máy 1</button>
-                <button id="host2" class="p-2 rounded-2xl border-2 hover:bg-red-600"> Máy 2</button>
-                <button id="host3" class="p-2 rounded-2xl border-2 hover:bg-red-700"> Máy 3</button>
-                <button id="host4" class="p-2 rounded-2xl border-2 hover:bg-red-800"> Máy 4</button>
-                <button id="predict_button" class="px-4 py-2 font-semibold border-2 rounded-2xl hover:bg-red-500">Dự đoán</button>
-
+        
+        <div class="sidebar">
+            <h2>Máy chủ</h2>
+            <div class="p-4 space-y-6">
+                <button id="host1">Máy 1</button>
+                <button id="host2">Máy 2</button>
+                <button id="host3">Máy 3</button>
+                <button id="host4">Máy 4</button>
+                <button id="predict_button">Dự đoán</button>
             </div>
         </div>
+
 
         <!-- Main content area for displaying charts -->
         <div class=" w-[80%]  h-full space-y-4 flex flex-col">
@@ -45,7 +44,108 @@
     <footer>
         <h1 class="text-center py-5 text-[#999]">© Bản quyền thuộc về Nguyễn Hoàn & Trần Thanh Phi</h1>
     </footer>
+
     <script type="module" src="main.js"></script>
+    
+
 </body>
+
+
+<style>
+    /* Button styles for selected state */
+.sidebar button.selected {
+    border-color: #3B82F6; /* Màu viền nổi bật */
+    box-shadow: 0 0 10px #3B82F6; /* Hiệu ứng ánh sáng */
+    background-color: #1E40AF; /* Màu nền khi được chọn */
+    color: #FFFFFF;
+}
+
+    /* Sidebar container */
+    .sidebar {
+        width: 20%;
+        height: 100vh;
+        background: linear-gradient(180deg, #374151, #1F2937);
+        color: #F9FAFB;
+        text-align: center;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+        position: sticky; /* Đảm bảo sidebar không bị cuộn */
+        top: 0;
+    }
+
+    /* Sidebar title */
+    .sidebar h2 {
+        font-size: 1.875rem; /* Tailwind's text-2xl equivalent */
+        margin-bottom: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #E5E7EB;
+        border-bottom: 2px solid #9CA3AF;
+        padding-bottom: 10px;
+        width: 80%;
+    }
+
+    /* Button styles */
+    .sidebar button {
+        padding: 12px 16px;
+        margin: 10px 0;
+        font-size: 1rem; /* Tailwind's text-lg equivalent */
+        font-weight: 600;
+        border: 2px solid #6B7280;
+        border-radius: 25px;
+        color: #F3F4F6;
+        background-color: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 80%;
+    }
+
+    .sidebar button:hover {
+        background: #EF4444;
+        border-color: #EF4444;
+        transform: scale(1.05);
+        color: #FFFFFF;
+    }
+
+    .sidebar button:active {
+        transform: scale(0.98);
+        background: #B91C1C;
+        border-color: #B91C1C;
+    }
+
+    /* Predict button (highlighted) */
+    .sidebar #predict_button {
+        background-color: #EF4444;
+        color: #FFFFFF;
+        border-color: #EF4444;
+    }
+
+    .sidebar #predict_button:hover {
+        background-color: #DC2626;
+        border-color: #DC2626;
+    }
+
+</style>
+<script>
+    // Lấy tất cả các nút trong sidebar
+    const buttons = document.querySelectorAll('.sidebar button');
+
+    // Thêm sự kiện click cho mỗi nút
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Loại bỏ lớp 'selected' khỏi tất cả các nút
+            buttons.forEach(btn => btn.classList.remove('selected'));
+
+            // Thêm lớp 'selected' cho nút được nhấn
+            button.classList.add('selected');
+        });
+    });
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </html>

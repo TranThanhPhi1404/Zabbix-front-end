@@ -407,7 +407,7 @@ async function handlePrediction(hostId) {
 async function getPredictionData(time, data) {
     // Get the loading screen element
     const loadingScreen = document.getElementById("loading-screen");
-
+    const errorMessageElement = document.getElementById("error-message");
     try {
         // Show the loading screen
         loadingScreen.classList.remove("hidden");
@@ -462,6 +462,8 @@ async function getPredictionData(time, data) {
         return predictionData;
     } catch (error) {
         console.error("Lỗi khi gọi API dự đoán:", error);
+        errorMessageElement.textContent = `Có lỗi xảy ra: ${error.message}`;
+        errorMessageElement.classList.remove("hidden");
         return null;
     } finally {
         // Hide the loading screen
