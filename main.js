@@ -54,7 +54,7 @@ async function renderCharts({
     predictedData.cpuAvg = predictionData.cpuAvg || predictedData.cpuAvg;
     predictedData.cpuUser = predictionData.cpuUser || predictedData.cpuUser;
     predictedData.disk = predictionData.disk || predictedData.disk;
-    predictedData.memory = predictionData.memory || predictedData.memory;
+    // predictedData.memory = predictionData.memory || predictedData.memory;
     predictedData.network = predictionData.network || predictedData.network;
 
     // Vẽ biểu đồ với dữ liệu mới
@@ -79,13 +79,13 @@ async function renderCharts({
         console.log("Không có dữ liệu Disk để vẽ biểu đồ");
     }
 
-    if (memoryTimestamps.length > 0 && memoryValues.length > 0) {
-        const memoryCtx = document.getElementById('memory_chart').getContext('2d');
-        drawChart(memoryCtx, memoryTimestamps, memoryValues, 'Memory Usage', predictedData.memory);
-        // console.log('Dữ liệu của memory', memoryValues, memoryTimestamps);
-    } else {
-        console.log("Không có dữ liệu Memory để vẽ biểu đồ");
-    }
+    // if (memoryTimestamps.length > 0 && memoryValues.length > 0) {
+    //     const memoryCtx = document.getElementById('memory_chart').getContext('2d');
+    //     drawChart(memoryCtx, memoryTimestamps, memoryValues, 'Memory Usage', predictedData.memory);
+    //     // console.log('Dữ liệu của memory', memoryValues, memoryTimestamps);
+    // } else {
+    //     console.log("Không có dữ liệu Memory để vẽ biểu đồ");
+    // }
 
     if (networkTimestamps.length > 0 && networkValues.length > 0) {
         const networkCtx = document.getElementById('network_chart').getContext('2d');
@@ -107,9 +107,11 @@ function drawChart(ctx, labels, data, label, predictedValues = [], predictedTime
         chartInstance = cpuUserChart;
     } else if (ctx.canvas.id === 'disk_chart') {
         chartInstance = diskChart;
-    } else if (ctx.canvas.id === 'memory_chart') {
-        chartInstance = memoryChart;
-    } else if (ctx.canvas.id === 'network_chart') {
+    } 
+    // else if (ctx.canvas.id === 'memory_chart') {
+    //     chartInstance = memoryChart;
+    // }
+     else if (ctx.canvas.id === 'network_chart') {
         chartInstance = networkChart;
     }
 
@@ -126,10 +128,12 @@ function drawChart(ctx, labels, data, label, predictedValues = [], predictedTime
     } else if (ctx.canvas.id === 'disk_chart' && predictedData.disk.length > 0) {
         predictedValues = predictedData.disk;
         predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
-    } else if (ctx.canvas.id === 'memory_chart' && predictedData.memory.length > 0) {
-        predictedValues = predictedData.memory;
-        predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
-    } else if (ctx.canvas.id === 'network_chart' && predictedData.network.length > 0) {
+    } 
+    // else if (ctx.canvas.id === 'memory_chart' && predictedData.memory.length > 0) {
+    //     predictedValues = predictedData.memory;
+    //     predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
+    // }
+     else if (ctx.canvas.id === 'network_chart' && predictedData.network.length > 0) {
         predictedValues = predictedData.network;
         predictedTimestamps = generateTimestamps(Number(labels[labels.length - 1]) + 3600, predictedValues.length);
     }
@@ -194,9 +198,11 @@ function drawChart(ctx, labels, data, label, predictedValues = [], predictedTime
         cpuUserChart = myChart;
     }else if (ctx.canvas.id === 'disk_chart') {
         diskChart = myChart;
-    } else if (ctx.canvas.id === 'memory_chart') {
-        memoryChart = myChart;
-    } else if (ctx.canvas.id === 'network_chart') {
+    } 
+    // else if (ctx.canvas.id === 'memory_chart') {
+    //     memoryChart = myChart;
+    // } 
+    else if (ctx.canvas.id === 'network_chart') {
         networkChart = myChart;
     }
     console.log("Biểu đồ đã được vẽ với dữ liệu:",label, {
