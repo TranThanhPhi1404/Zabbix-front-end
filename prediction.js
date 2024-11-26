@@ -35,7 +35,10 @@ let predictedData = {
     memory: [],
     network: []
 };
-
+const hostNames = {
+    "host_10628": "HOAN-A",
+    
+};
 // Nhận dữ liệu và gọi hàm vẽ
 async function renderCharts({
     cpuAvgTimestamps = [],
@@ -48,7 +51,8 @@ async function renderCharts({
     memoryValues = [], 
     networkTimestamps = [],
     networkValues = [],
-    predictionData = {}
+    predictionData = {},
+    hostId,
 
 } = {}) {  
     predictedData.cpuAvg = predictionData.cpuAvg || predictedData.cpuAvg;
@@ -57,24 +61,26 @@ async function renderCharts({
     predictedData.memory = predictionData.memory || predictedData.memory;
     predictedData.network = predictionData.network || predictedData.network;
 
+    const hostName = hostNames[hostId] || hostId;
+
     // Vẽ biểu đồ với dữ liệu mới
     if (cpuAvgTimestamps.length > 0 && cpuAvgValues.length > 0) {
         const cpuAvgCtx = document.getElementById('cpu_avg_chart').getContext('2d');
-        drawChart(cpuAvgCtx, cpuAvgTimestamps, cpuAvgValues, 'CPU Average', predictedData.cpuAvg);
+        drawChart(cpuAvgCtx, cpuAvgTimestamps, cpuAvgValues, `Dự đoán mức sử dụng CPU trung bình của máy ${hostName}`, predictedData.cpuAvg);
     } else {
         console.log("Không có dữ liệu CPU Average để vẽ biểu đồ");
     }
 
     if (cpuUserTimestamps.length > 0 && cpuUserValues.length > 0) {
         const cpuUserCtx = document.getElementById('cpu_user_chart').getContext('2d');
-        drawChart(cpuUserCtx, cpuUserTimestamps, cpuUserValues, 'CPU User', predictedData.cpuUser);
+        drawChart(cpuUserCtx, cpuUserTimestamps, cpuUserValues, `Dự đoán mức sử dụng CPU của người dùng trên ${hostName}`, predictedData.cpuUser);
     } else {
         console.log("Không có dữ liệu CPU User để vẽ biểu đồ");
     }
 
     if (diskTimestamps.length > 0 && diskValues.length > 0) {
         const diskCtx = document.getElementById('disk_chart').getContext('2d');
-        drawChart(diskCtx, diskTimestamps, diskValues, 'Disk Usage', predictedData.disk);
+        drawChart(diskCtx, diskTimestamps, diskValues, `Dự đoán mức sử dụng ổ đĩa trên ${hostName}`, predictedData.disk);
     } else {
         console.log("Không có dữ liệu Disk để vẽ biểu đồ");
     }
@@ -89,7 +95,7 @@ async function renderCharts({
 
     if (networkTimestamps.length > 0 && networkValues.length > 0) {
         const networkCtx = document.getElementById('network_chart').getContext('2d');
-        drawChart(networkCtx, networkTimestamps, networkValues, 'Network Traffic', predictedData.network);
+        drawChart(networkCtx, networkTimestamps, networkValues, `Dự đoán lưu lượng mạng trên ${hostName}`, predictedData.network);
     } else {
         console.log("Không có dữ liệu Network để vẽ biểu đồ");
     }
@@ -328,7 +334,7 @@ async function handlePrediction(hostId) {
             console.log('Predicted data saved to localStorage:', predictedData);
             
             const chartCtx = document.getElementById(chartId).getContext('2d');
-            drawChart(chartCtx, chartData.map(item => item.key), chartData.map(item => item.value), chartLabel, predictedValues, predictedTimestamps);
+            drawChart(chartCtx, chartData.map(item => item.key), chartData.map(item => item.value), chartLabel, predictedValues, predictedTimestamps, hostId);
         }
     }
 
@@ -580,11 +586,7 @@ document.getElementById('host3').addEventListener('click', (event) => {
     handlePrediction();
      
 });
-document.getElementById('host4').addEventListener('click', (event) => {
-    event.preventDefault();
-    handlePrediction();
-     
-});
+
 window.onload = () => {
     renderCharts(); 
 };
