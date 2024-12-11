@@ -2602,12 +2602,40 @@ video {
 }
 
 @media (min-width: 768px) {
+  .md\:w-\[90\%\] {
+    width: 90%;
+  }
+
   .md\:flex-row {
     flex-direction: row;
   }
 
   .md\:flex-wrap {
     flex-wrap: wrap;
+  }
+
+  .md\:p-1 {
+    padding: 0.25rem;
+  }
+
+  .md\:text-\[10px\] {
+    font-size: 10px;
+  }
+
+  .md\:text-\[8px\] {
+    font-size: 8px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .lg\:text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
 }
 

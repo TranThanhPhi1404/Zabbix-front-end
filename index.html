@@ -32,9 +32,9 @@
             <div class="gap-5 flex flex-col md:flex-row md:flex-wrap p-4 px-20">
                 <canvas class="chart flex" id="cpu_avg_chart">CPU Average Chart</canvas>
                 <canvas class="chart flex" id="cpu_user_chart">CPU User Chart</canvas>
-                <!-- <canvas class="chart flex" id="memory_chart">Memory Usage Chart</canvas> -->
                 <canvas class="chart flex" id="disk_chart">Disk Usage Chart</canvas>
                 <canvas class="chart flex" id="network_chart">Network Traffic Chart</canvas>
+                <canvas class="chart flex" id="memory_chart">Memory Usage Chart</canvas>
 
             </div>
         </div>
@@ -130,6 +130,40 @@
 
 </style>
 <script>
+    document.getElementById('host1').addEventListener('click', function() {
+        // Hiển thị các biểu đồ cần cho host1
+        document.getElementById('cpu_avg_chart').style.display = 'block';
+        document.getElementById('cpu_user_chart').style.display = 'block';
+        document.getElementById('disk_chart').style.display = 'block';
+        document.getElementById('network_chart').style.display = 'block';
+    
+        // Ẩn các biểu đồ không cần thiết
+        document.getElementById('memory_chart').style.display = 'none';
+        
+    });
+    
+    document.getElementById('host2').addEventListener('click', function() {
+        // Hiển thị chỉ 2 biểu đồ cần cho host2
+        document.getElementById('cpu_avg_chart').style.display = 'block';
+        document.getElementById('memory_chart').style.display = 'block';
+    
+        // Ẩn các biểu đồ không cần thiết
+        document.getElementById('cpu_user_chart').style.display = 'none';
+        document.getElementById('disk_chart').style.display = 'none';
+        document.getElementById('network_chart').style.display = 'none';
+    });
+    
+    document.getElementById('host3').addEventListener('click', function() {
+        // Tương tự như host2, hiển thị 2 biểu đồ cần cho host3
+        document.getElementById('cpu_avg_chart').style.display = 'block';
+        document.getElementById('memory_chart').style.display = 'block';
+    
+        // Ẩn các biểu đồ không cần thiết
+        document.getElementById('cpu_user_chart').style.display = 'none';
+        document.getElementById('disk_chart').style.display = 'none';
+        document.getElementById('network_chart').style.display = 'none';
+    });
+    
     // Lấy tất cả các nút trong sidebar
     const buttons = document.querySelectorAll('.sidebar button');
 
