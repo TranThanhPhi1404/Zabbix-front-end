@@ -12,19 +12,19 @@
 </head>
 <body>
     <div class=" flex w-full h-full">
-        <!-- Sidebar for host selection -->
-        <div class="sidebar">
-            <h2 class="">Máy chủ</h2>
+        
+        <div class="sidebar w-1/5 h-screen bg-gradient-to-b from-gray-700 to-gray-800 text-gray-100 text-center flex flex-col items-center p-5 shadow-[5px_0_15px_rgba(0,0,0,0.3)] sticky top-0">
+            <h2 class="text-2xl  mb-5 font-bold uppercase text-gray-200 border-b-2 border-gray-400 pb-2 w-4/5">Máy chủ</h2>
             <div class="p-4 space-y-6">
-                <button id="host1">HOAN-A</button>
-                <button id="host2">DomainController</button>
-                <button id="host3">Winserver</button>
-                <button onclick="location.href='index.html'" class="p-2 rounded-2xl border-2 hover:bg-blue-500">Trang chủ</button>
+                <button class="px-4 py-3 my-2 text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out w-4/5 hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white" id="host1">HOAN-A</button>
+                <button class="px-4 py-3 my-2 text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out w-4/5 hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white" id="host2">DomainController</button>
+                <button class="px-4 py-3 my-2 text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out w-4/5 hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white" id="host3">Winserver</button>
+                <button onclick="location.href='index.html'" class="bg-blue-500 text-white border-blue-300 border-2 px-4 py-3 my-2 text-lg font-semibold rounded-full cursor-pointer transition-all duration-300 ease-in-out w-4/5 hover:bg-blue-400 hover:border-blue-600">Trang chủ</button>
 
             </div>
         </div>
 
-        <!-- Main content area for displaying charts -->
+        
         <div class=" w-[80%]  h-full space-y-4 flex flex-col">
             <div class="flex py-4">
                 <h2 class="w-[90%] text-center text-3xl p-4 font-bold">Trang dự đoán dữ liệu</h2>
@@ -38,7 +38,7 @@
             <div class="gap-5 flex flex-col md:flex-row md:flex-wrap p-4 px-20">
                 <canvas class="chart flex" id="cpu_avg_chart">CPU Average Chart</canvas>
                 <canvas class="chart flex" id="cpu_user_chart">CPU User Chart</canvas>
-                <!-- <canvas class="chart flex" id="memory_chart">Memory Usage Chart</canvas> -->
+                <canvas class="chart flex" id="memory_chart">Memory Usage Chart</canvas>
                 <canvas class="chart flex" id="disk_chart">Disk Usage Chart</canvas>
                 <canvas class="chart flex" id="network_chart">Network Traffic Chart</canvas>
                 <!-- <div id="error-message" class="hidden text-red-500 font-bold text-center mt-4"></div> -->
@@ -70,125 +70,74 @@
     }
     
     /* Button styles for selected state */
-.sidebar button.selected {
-    border-color: #3B82F6; /* Màu viền nổi bật */
-    box-shadow: 0 0 10px #3B82F6; /* Hiệu ứng ánh sáng */
-    background-color: #1E40AF; /* Màu nền khi được chọn */
-    color: #FFFFFF;
-}
-
-    /* Sidebar container */
-    .sidebar {
-        width: 20%;
-        height: 100vh;
-        background: linear-gradient(180deg, #374151, #1F2937);
-        color: #F9FAFB;
-        text-align: center;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px 0;
-        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-        position: sticky; /* Đảm bảo sidebar không bị cuộn */
-        top: 0;
-    }
-
-    /* Sidebar title */
-    .sidebar h2 {
-        font-size: 1.875rem; /* Tailwind's text-2xl equivalent */
-        margin-bottom: 20px;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: #E5E7EB;
-        border-bottom: 2px solid #9CA3AF;
-        padding-bottom: 10px;
-        width: 80%;
-    }
-
-    /* Button styles */
-    .sidebar button {
-        padding: 12px 16px;
-        margin: 10px 0;
-        font-size: 1rem; /* Tailwind's text-lg equivalent */
-        font-weight: 600;
-        border: 2px solid #6B7280;
-        border-radius: 25px;
-        color: #F3F4F6;
-        background-color: transparent;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        width: 80%;
-    }
-
-    .sidebar button:hover {
-        background: #EF4444;
-        border-color: #EF4444;
-        transform: scale(1.05);
+    .sidebar button.selected {
+        border-color: #3B82F6; /* Màu viền nổi bật */
+        box-shadow: 0 0 10px #3B82F6; /* Hiệu ứng ánh sáng */
+        background-color: #1E40AF; /* Màu nền khi được chọn */
         color: #FFFFFF;
     }
-
     .sidebar button:active {
         transform: scale(0.98);
         background: #B91C1C;
         border-color: #B91C1C;
     }
-
-    /* Predict button (highlighted) */
-    .sidebar #predict_button {
-        background-color: #EF4444;
-        color: #FFFFFF;
-        border-color: #EF4444;
-    }
-
-    .sidebar #predict_button:hover {
-        background-color: #DC2626;
-        border-color: #DC2626;
-    }
-
 </style>
 <script>
-    // Lấy tất cả các nút trong sidebar
+    document.getElementById('host1').addEventListener('click', function() {
+        document.getElementById('cpu_avg_chart').style.display = 'block';
+        document.getElementById('cpu_user_chart').style.display = 'block';
+        document.getElementById('disk_chart').style.display = 'block';
+        document.getElementById('network_chart').style.display = 'block';
+    
+        document.getElementById('memory_chart').style.display = 'none';
+        
+    });
+    
+    document.getElementById('host2').addEventListener('click', function() {
+        document.getElementById('cpu_avg_chart').style.display = 'block';
+        document.getElementById('memory_chart').style.display = 'block';
+    
+        document.getElementById('cpu_user_chart').style.display = 'none';
+        document.getElementById('disk_chart').style.display = 'none';
+        document.getElementById('network_chart').style.display = 'none';
+    });
+    
+    document.getElementById('host3').addEventListener('click', function() {
+        document.getElementById('cpu_avg_chart').style.display = 'block';
+        document.getElementById('memory_chart').style.display = 'block';
+    
+        document.getElementById('cpu_user_chart').style.display = 'none';
+        document.getElementById('disk_chart').style.display = 'none';
+        document.getElementById('network_chart').style.display = 'none';
+    });
     const buttons = document.querySelectorAll('.sidebar button');
-
-    // Thêm sự kiện click cho mỗi nút
     buttons.forEach(button => {
         button.addEventListener('click', () => {
-            // Loại bỏ lớp 'selected' khỏi tất cả các nút
             buttons.forEach(btn => btn.classList.remove('selected'));
-
-            // Thêm lớp 'selected' cho nút được nhấn
             button.classList.add('selected');
         });
     });
 
-    // Show the loading screen
-function showLoading() {
-    document.getElementById('loading-screen').classList.remove('hidden');
-}
-
-// Hide the loading screen
-function hideLoading() {
-    document.getElementById('loading-screen').classList.add('hidden');
-}
-
-// Example usage in async function (like data fetching)
-async function loadData() {
-    showLoading();
-
-    try {
-        // Simulate fetching data (e.g., API call or loading data)
-        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 seconds
-
-        // Once data is loaded, hide the loading screen
-        hideLoading();
-    } catch (error) {
-        console.error("Error loading data", error);
-        hideLoading();
+    function showLoading() {
+        document.getElementById('loading-screen').classList.remove('hidden');
     }
-}
 
-loadData();
+    function hideLoading() {
+        document.getElementById('loading-screen').classList.add('hidden');
+    }
+
+    async function loadData() {
+        showLoading();
+        try {
+            await new Promise(resolve => setTimeout(resolve, 3000)); 
+            hideLoading();
+        } catch (error) {
+            console.error("Error loading data", error);
+            hideLoading();
+        }
+    }
+
+    loadData();
 
 </script>
 
