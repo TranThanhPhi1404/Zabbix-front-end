@@ -2,6 +2,53 @@ console.log = function() {};
 console.error = function() {};
 console.warn = function() {};
 
+document.getElementById('host1').addEventListener('click', function() {
+    // Hiển thị các biểu đồ cần cho host1
+    document.getElementById('cpu_avg_chart').style.display = 'block';
+    document.getElementById('cpu_user_chart').style.display = 'block';
+    document.getElementById('disk_chart').style.display = 'block';
+    document.getElementById('network_chart').style.display = 'block';
+
+    // Ẩn các biểu đồ không cần thiết
+    document.getElementById('memory_chart').style.display = 'none';
+    
+});
+
+document.getElementById('host2').addEventListener('click', function() {
+    // Hiển thị chỉ 2 biểu đồ cần cho host2
+    document.getElementById('cpu_avg_chart').style.display = 'block';
+    document.getElementById('memory_chart').style.display = 'block';
+
+    // Ẩn các biểu đồ không cần thiết
+    document.getElementById('cpu_user_chart').style.display = 'none';
+    document.getElementById('disk_chart').style.display = 'none';
+    document.getElementById('network_chart').style.display = 'none';
+});
+
+document.getElementById('host3').addEventListener('click', function() {
+    // Tương tự như host2, hiển thị 2 biểu đồ cần cho host3
+    document.getElementById('cpu_avg_chart').style.display = 'block';
+    document.getElementById('memory_chart').style.display = 'block';
+
+    // Ẩn các biểu đồ không cần thiết
+    document.getElementById('cpu_user_chart').style.display = 'none';
+    document.getElementById('disk_chart').style.display = 'none';
+    document.getElementById('network_chart').style.display = 'none';
+});
+
+// Lấy tất cả các nút trong sidebar
+const buttons = document.querySelectorAll('.sidebar button');
+
+// Thêm sự kiện click cho mỗi nút
+buttons.forEach(button => {
+    button.addEventListener('click', () => {
+        // Loại bỏ lớp 'selected' khỏi tất cả các nút
+        buttons.forEach(btn => btn.classList.remove('selected'));
+
+        // Thêm lớp 'selected' cho nút được nhấn
+        button.classList.add('selected');
+    });
+});
 // Phần kết nối với web trong firebase 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"; 
 import { getDatabase, ref, child, get  , onValue} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js"; 

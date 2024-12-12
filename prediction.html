@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trang dự đoán dữ liệu Zabbix">
+    <meta name="keywords" content="zabbix, monitoring, prediction, server">
+    <meta name="author" content="Trần Thanh Phi, Nguyễn Hoàn">
     <title>FE-ZABBIX-PRED</title>
+    <meta property="og:title" content="Trang dự đoán dữ liệu Zabbix">
+    <meta property="og:description" content="Hiển thị dự đoán của máy chủ Zabbix">
     <link rel="stylesheet" href="style.css">
     <link href="style-build.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="pred.svg">
@@ -21,30 +25,26 @@
                 <button class="px-1 md:px-4 py-3 my-2 text-xs xl:text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out  hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white w-full" id="host3">Winserver</button>
                 <button class="px-1 md:px-4 py-3 my-2 text-xs xl:text-lg font-semibold bg-blue-500 text-white border-blue-300 border-2 rounded-full cursor-pointer transition-all duration-300 ease-in-out w-full hover:bg-blue-400 hover:border-blue-600" onclick="location.href='index.html'">Trang chủ</button>
                 <!-- <button id="logoutButton" class="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Đăng Xuất</button> -->
-
             </div>
         </div>
 
-        
         <div class=" w-[80%]  h-full space-y-4 flex flex-col">
-            <div class="flex py-4">
-                <h2 class="w-[90%] text-center text-3xl p-4 font-bold">Trang dự đoán dữ liệu</h2>
+            <div class="flex">
+                <h2 class="w-full text-center text-3xl p-4 font-bold bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 bg-clip-text text-transparent animate-gradient-flow bg-[length:200%_200%]">Trang dự đoán dữ liệu</h2>
             </div>
-            <div id="loading-screen" class="flex flex-col hidden inset-0 bg-opacity-75 items-center justify-center space-y-10">
-                <h2>Dữ liệu dự đoán đang được xử lý, vui lòng chờ trong ít phút ...</h2>
-                <div class="loader"></div>
+            <div id="text-start" class="py-24 font-bold text-center text-2xl text-gray-700 ">Bạn cần phải chọn 1 máy chủ để có thể xem dữ liệu dự đoán</div>
+            <div id="loading-screen" class="flex flex-col hidden py-24 inset-0 bg-opacity-75 items-center justify-center space-y-10">
+                <h2 class="text-xl text-gray-700 font-semibold">Dữ liệu dự đoán đang được xử lý, vui lòng chờ trong ít phút ...</h2>
+                <div class="loader border-4 border-gray-200 border-t-blue-500 rounded-full w-24 h-24 animate-spin-slow"></div>
             </div>
-            
             
             <div class="gap-5 flex flex-col md:flex-row md:flex-wrap p-4 px-20">
                 <canvas class="chart flex" id="cpu_avg_chart">CPU Average Chart</canvas>
                 <canvas class="chart flex" id="cpu_user_chart">CPU User Chart</canvas>
                 <canvas class="chart flex" id="disk_chart">Disk Usage Chart</canvas>
                 <canvas class="chart flex" id="network_chart">Network Traffic Chart</canvas>
-                <!-- <div id="error-message" class="hidden text-red-500 font-bold text-center mt-4"></div> -->
                 <canvas class="chart flex" id="cpu_chart">CPU Chart</canvas>
                 <canvas class="chart flex" id="memory_chart">Memory Usage Chart</canvas>
-
             </div>
         </div>
     </div>
@@ -55,26 +55,10 @@
     <script type="module" src="prediction.js"></script>
 </body>
 <style>
-
-    .loader {
-        border: 4px solid #f3f3f3; /* Light gray */
-        border-top: 4px solid #3498db; /* Blue color */
-        border-radius: 50%;
-        width: 100px;
-        height: 100px;
-        animation: spin 2s linear infinite;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    /* Button styles for selected state */
     .sidebar button.selected {
-        border-color: #3B82F6; /* Màu viền nổi bật */
-        box-shadow: 0 0 10px #3B82F6; /* Hiệu ứng ánh sáng */
-        background-color: #1E40AF; /* Màu nền khi được chọn */
+        border-color: #3B82F6; 
+        box-shadow: 0 0 10px #3B82F6; 
+        background-color: #1E40AF; 
         color: #FFFFFF;
     }
     .sidebar button:active {
@@ -83,67 +67,4 @@
         border-color: #B91C1C;
     }
 </style>
-<script>
-    document.getElementById('host1').addEventListener('click', function() {
-        document.getElementById('cpu_avg_chart').style.display = 'block';
-        document.getElementById('cpu_user_chart').style.display = 'block';
-        document.getElementById('disk_chart').style.display = 'block';
-        document.getElementById('network_chart').style.display = 'block';
-    
-        document.getElementById('cpu_chart').style.display = 'none';
-        document.getElementById('memory_chart').style.display = 'none';
-        
-    });
-    
-    document.getElementById('host2').addEventListener('click', function() {
-        document.getElementById('memory_chart').style.display = 'block';
-        document.getElementById('cpu_chart').style.display = 'block';
-    
-        document.getElementById('cpu_avg_chart').style.display = 'none';
-        document.getElementById('cpu_user_chart').style.display = 'none';
-        document.getElementById('disk_chart').style.display = 'none';
-        document.getElementById('network_chart').style.display = 'none';
-    });
-    
-    document.getElementById('host3').addEventListener('click', function() {
-        document.getElementById('cpu_chart').style.display = 'block';
-        document.getElementById('memory_chart').style.display = 'block';
-
-        document.getElementById('cpu_avg_chart').style.display = 'none';
-        document.getElementById('cpu_user_chart').style.display = 'none';
-        document.getElementById('disk_chart').style.display = 'none';
-        document.getElementById('network_chart').style.display = 'none';
-    });
-    const buttons = document.querySelectorAll('.sidebar button');
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            buttons.forEach(btn => btn.classList.remove('selected'));
-            button.classList.add('selected');
-        });
-    });
-
-    function showLoading() {
-        document.getElementById('loading-screen').classList.remove('hidden');
-    }
-
-    function hideLoading() {
-        document.getElementById('loading-screen').classList.add('hidden');
-    }
-
-    async function loadData() {
-        showLoading();
-        try {
-            await new Promise(resolve => setTimeout(resolve, 3000)); 
-            hideLoading();
-        } catch (error) {
-            console.error("Error loading data", error);
-            hideLoading();
-        }
-    }
-
-    loadData();
-
-</script>
-
-
 </html>

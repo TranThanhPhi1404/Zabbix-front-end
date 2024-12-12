@@ -1,6 +1,70 @@
-// console.log = function() {};
-// console.error = function() {};
-// console.warn = function() {};
+console.log = function() {};
+console.error = function() {};
+console.warn = function() {};
+
+document.getElementById('host1').addEventListener('click', function() {
+    document.getElementById('cpu_avg_chart').style.display = 'block';
+    document.getElementById('cpu_user_chart').style.display = 'block';
+    document.getElementById('disk_chart').style.display = 'block';
+    document.getElementById('network_chart').style.display = 'block';
+
+    document.getElementById('cpu_chart').style.display = 'none';
+    document.getElementById('memory_chart').style.display = 'none';
+    
+});
+
+document.getElementById('host2').addEventListener('click', function() {
+    document.getElementById('memory_chart').style.display = 'block';
+    document.getElementById('cpu_chart').style.display = 'block';
+
+    document.getElementById('cpu_avg_chart').style.display = 'none';
+    document.getElementById('cpu_user_chart').style.display = 'none';
+    document.getElementById('disk_chart').style.display = 'none';
+    document.getElementById('network_chart').style.display = 'none';
+});
+
+document.getElementById('host3').addEventListener('click', function() {
+    document.getElementById('cpu_chart').style.display = 'block';
+    document.getElementById('memory_chart').style.display = 'block';
+
+    document.getElementById('cpu_avg_chart').style.display = 'none';
+    document.getElementById('cpu_user_chart').style.display = 'none';
+    document.getElementById('disk_chart').style.display = 'none';
+    document.getElementById('network_chart').style.display = 'none';
+});
+
+const buttons = document.querySelectorAll('.sidebar button');
+
+buttons.forEach(button => {
+    button.addEventListener('click', () => {
+        document.getElementById('text-start').style.display = 'none';
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+    });
+});
+
+function showLoading() {
+    document.getElementById('loading-screen').classList.remove('hidden');
+}
+
+function hideLoading() {
+    document.getElementById('loading-screen').classList.add('hidden');
+}
+
+async function loadData() {
+    showLoading();
+    try {
+        await new Promise(resolve => setTimeout(resolve, 3000)); 
+        hideLoading();
+    } catch (error) {
+        console.error("Error loading data", error);
+        hideLoading();
+    }
+}
+
+window.onload = function() {
+    document.getElementById('text-start').style.display = 'block';
+};
 
 // Phần kết nối với web trong firebase 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"; 
@@ -286,7 +350,7 @@ async function handlePrediction(hostId) {
     // Sử dụng Promise.all để chạy các biểu đồ song song thay vì async/await từng cái
     const predictionPromises = [
         processPrediction('cpu_avg_chart', currentChartData, 'CPU trung bình', hostId),
-        processPrediction('cpu_user_chart', currentCpuUserData, 'CPU của người dùng', hostId),
+        processPrediction('cpu_user_chart', currentCpuUserData, 'CPU người dùng', hostId),
         processPrediction('disk_chart', currentDiskData, 'ổ đĩa', hostId),
         // processPrediction('memory_chart', currentMemoryData, 'Memory Usage', hostId),
         processPrediction('network_chart', currentNetworkData, 'lưu lượng mạng', hostId)
