@@ -1,3 +1,7 @@
+console.log = function() {};
+console.error = function() {};
+console.warn = function() {};
+
 // Phần kết nối với web trong firebase 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"; 
 import { getDatabase, ref, child, get  , onValue} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js"; 
@@ -1128,3 +1132,5 @@ function drawChart2(ctx, labels, data, label, predictedValues = [], predictedTim
 // window.onload = () => {
 //     document.getElementById('host1').click(); 
 // };
+
+

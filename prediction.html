@@ -4,22 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FE-ZABBIX</title>
+    <title>FE-ZABBIX-PRED</title>
     <link rel="stylesheet" href="style.css">
     <link href="style-build.css" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="pred.svg">
 
 </head>
 <body>
     <div class=" flex w-full h-full">
         
         <div class="sidebar w-1/5 h-screen bg-gradient-to-b from-gray-700 to-gray-800 text-gray-100 text-center flex flex-col items-center p-5 shadow-[5px_0_15px_rgba(0,0,0,0.3)] sticky top-0">
-            <h2 class="text-2xl  mb-5 font-bold uppercase text-gray-200 border-b-2 border-gray-400 pb-2 w-4/5">Máy chủ</h2>
-            <div class="p-4 space-y-6">
-                <button class="px-4 py-3 my-2 text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out w-4/5 hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white" id="host1">HOAN-A</button>
-                <button class="px-4 py-3 my-2 text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out w-4/5 hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white" id="host2">DomainController</button>
-                <button class="px-4 py-3 my-2 text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out w-4/5 hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white" id="host3">Winserver</button>
-                <button onclick="location.href='index.html'" class="bg-blue-500 text-white border-blue-300 border-2 px-4 py-3 my-2 text-lg font-semibold rounded-full cursor-pointer transition-all duration-300 ease-in-out w-4/5 hover:bg-blue-400 hover:border-blue-600">Trang chủ</button>
+            <h2 class="text-lg md:text-2xl mb-5 font-bold uppercase text-gray-200 border-b-2 border-gray-400 pb-2 w-full">Máy chủ</h2>
+            <div class="p-2 md:p-4 space-y-6">
+                <button class="px-1 md:px-4 py-3 my-2 text-xs xl:text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out  hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white w-full" id="host1">HOAN-A</button>
+                <button class="px-1 md:px-4 py-3 my-2 text-xs xl:text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white w-full text-center" id="host2"><span class="hidden md:flex justify-center">DomainController</span><p class="flex md:hidden justify-center">DC</p></button>
+                <button class="px-1 md:px-4 py-3 my-2 text-xs xl:text-lg font-semibold border-2 border-gray-500 rounded-full text-gray-100 bg-transparent cursor-pointer transition-all duration-300 ease-in-out  hover:bg-red-500 hover:border-red-500 hover:scale-105 hover:text-white w-full" id="host3">Winserver</button>
+                <button class="px-1 md:px-4 py-3 my-2 text-xs xl:text-lg font-semibold bg-blue-500 text-white border-blue-300 border-2 rounded-full cursor-pointer transition-all duration-300 ease-in-out w-full hover:bg-blue-400 hover:border-blue-600" onclick="location.href='index.html'">Trang chủ</button>
+                <!-- <button id="logoutButton" class="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Đăng Xuất</button> -->
 
             </div>
         </div>
@@ -38,11 +39,11 @@
             <div class="gap-5 flex flex-col md:flex-row md:flex-wrap p-4 px-20">
                 <canvas class="chart flex" id="cpu_avg_chart">CPU Average Chart</canvas>
                 <canvas class="chart flex" id="cpu_user_chart">CPU User Chart</canvas>
-                <canvas class="chart flex" id="memory_chart">Memory Usage Chart</canvas>
                 <canvas class="chart flex" id="disk_chart">Disk Usage Chart</canvas>
                 <canvas class="chart flex" id="network_chart">Network Traffic Chart</canvas>
                 <!-- <div id="error-message" class="hidden text-red-500 font-bold text-center mt-4"></div> -->
-
+                <canvas class="chart flex" id="cpu_chart">CPU Chart</canvas>
+                <canvas class="chart flex" id="memory_chart">Memory Usage Chart</canvas>
 
             </div>
         </div>
@@ -89,23 +90,26 @@
         document.getElementById('disk_chart').style.display = 'block';
         document.getElementById('network_chart').style.display = 'block';
     
+        document.getElementById('cpu_chart').style.display = 'none';
         document.getElementById('memory_chart').style.display = 'none';
         
     });
     
     document.getElementById('host2').addEventListener('click', function() {
-        document.getElementById('cpu_avg_chart').style.display = 'block';
         document.getElementById('memory_chart').style.display = 'block';
+        document.getElementById('cpu_chart').style.display = 'block';
     
+        document.getElementById('cpu_avg_chart').style.display = 'none';
         document.getElementById('cpu_user_chart').style.display = 'none';
         document.getElementById('disk_chart').style.display = 'none';
         document.getElementById('network_chart').style.display = 'none';
     });
     
     document.getElementById('host3').addEventListener('click', function() {
-        document.getElementById('cpu_avg_chart').style.display = 'block';
+        document.getElementById('cpu_chart').style.display = 'block';
         document.getElementById('memory_chart').style.display = 'block';
-    
+
+        document.getElementById('cpu_avg_chart').style.display = 'none';
         document.getElementById('cpu_user_chart').style.display = 'none';
         document.getElementById('disk_chart').style.display = 'none';
         document.getElementById('network_chart').style.display = 'none';
